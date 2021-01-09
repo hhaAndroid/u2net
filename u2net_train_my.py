@@ -105,7 +105,7 @@ def foze_encoder(net):
     for param in net.stage3.parameters():
         param.requires_grad = False
     net.stage4.eval()
-    for param in net.stage1.parameters():
+    for param in net.stage4.parameters():
         param.requires_grad = False
     net.stage5.eval()
     for param in net.stage5.parameters():
