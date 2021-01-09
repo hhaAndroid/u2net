@@ -83,7 +83,7 @@ def ConvertMaskToLabelMe(mask_path,image_path):
 
 
 if __name__ == '__main__':
-    path='/home/hha/dataset/circle/labelme'
+    path='/home/hha/dataset/circle/data'
     img_list = glob.glob(path + os.sep + '*')
     img_name_list = list(filter(lambda f: f.find('.json') < 0 and f.find('_mask') < 0, img_list))
     print(img_name_list)
@@ -96,11 +96,10 @@ if __name__ == '__main__':
         aaa = name1.split(".")
         mask_path = os.path.join(fname, aaa[0] + '_mask.' + aaa[1])
 
-        # data=ReadLabelMeJson(json_path)
+        data=ReadLabelMeJson(json_path)
 
         # visLabelMe(data,img)
 
-        # ConvertLabelMeToMask(data,img,name,is_save=True)
-
-        ConvertMaskToLabelMe(mask_path,name)
+        ConvertLabelMeToMask(data,img,name,is_save=True)
+        # ConvertMaskToLabelMe(mask_path,name)
 
