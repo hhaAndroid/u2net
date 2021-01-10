@@ -61,7 +61,7 @@ for tra_img in tra_img_name_list:
 
 
 epoch_num = 100
-batch_size_train = 12
+batch_size_train = 8
 batch_size_val = 1
 train_num = 0
 val_num = 0
@@ -81,7 +81,7 @@ salobj_dataset = SalObjDataset(
         RescaleT(320),
         RandomCrop(288),
         ToTensorLab(flag=0)]))
-salobj_dataloader = DataLoader(salobj_dataset, batch_size=batch_size_train, shuffle=True, num_workers=2)
+salobj_dataloader = DataLoader(salobj_dataset, batch_size=batch_size_train, shuffle=True, num_workers=0,drop_last=True)
 
 # ------- 3. define model --------
 # define the net
@@ -95,27 +95,30 @@ net.load_state_dict(torch.load(model_dir))
 
 
 def foze_encoder(net):
-    net.stage1.eval()
     for param in net.stage1.parameters():
         param.requires_grad = False
-    net.stage2.eval()
     for param in net.stage2.parameters():
         param.requires_grad = False
-    net.stage3.eval()
     for param in net.stage3.parameters():
         param.requires_grad = False
-    net.stage4.eval()
     for param in net.stage4.parameters():
         param.requires_grad = False
-    net.stage5.eval()
     for param in net.stage5.parameters():
         param.requires_grad = False
-    net.stage6.eval()
     for param in net.stage6.parameters():
         param.requires_grad = False
 
+def foze_bn(net):
+    net.stage1.eval()
+    net.stage2.eval()
+    net.stage3.eval()
+    net.stage4.eval()
+    net.stage5.eval()
+    net.stage6.eval()
+
 
 # 固定骨架
+foze_bn(net)
 foze_encoder(net)
 
 
@@ -125,7 +128,13 @@ if torch.cuda.is_available():
 
 # ------- 4. define optimizer --------
 print("---define optimizer...")
-optimizer = optim.Adam(net.parameters(), lr=0.0001, betas=(0.9, 0.999), eps=1e-08, weight_decay=4)
+params=[]
+for param in net.parameters():
+    if param.requires_grad is True:
+        params.append(param)
+
+optimizer = optim.Adam(params, lr=0.0005, betas=(0.9, 0.999), eps=1e-08, weight_decay=0)
+# optimizer=optim.SGD(param,lr=0.0005,)
 
 # ------- 5. training process --------
 print("---start training...")
@@ -137,7 +146,7 @@ save_frq = 2000 # save the model every 2000 iterations
 
 for epoch in range(0, epoch_num):
     net.train()
-    foze_encoder(net)
+    foze_bn(net)
 
     for i, data in enumerate(salobj_dataloader):
         ite_num = ite_num + 1
@@ -181,5 +190,6 @@ for epoch in range(0, epoch_num):
             running_loss = 0.0
             running_tar_loss = 0.0
             net.train()  # resume train
+            foze_bn(net)
             ite_num4val = 0
 

@@ -58,7 +58,7 @@ def main():
     # image_dir = os.path.join(os.getcwd(), 'test_data', 'test_images')
     image_dir = '/home/hha/dataset/circle/circle'
     prediction_dir = '/home/hha/dataset/circle/circle_pred'
-    model_dir='/home/hha/pytorch_code/U-2-Net-master/saved_models/u2netp/u2netp.pthu2netp_bce_itr_1600_train_0.074306_tar_0.007080.pth'
+    model_dir='/home/hha/pytorch_code/U-2-Net-master/saved_models/u2netp/u2netp.pthu2netp_bce_itr_2000_train_0.077763_tar_0.006976.pth'
     # model_dir = os.path.join(os.getcwd(), 'saved_models', model_name, model_name + '.pth')
 
     img_name_list = glob.glob(image_dir + os.sep + '*')
